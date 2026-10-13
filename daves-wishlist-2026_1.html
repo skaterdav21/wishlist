@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dave's Wishlist 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: header with stats + toolbar, filter chips, grid of product cards with gift-tag prices and store comparisons */
+:root{
+  --bg:#eef1ee; --card:#ffffff; --ink:#18201c; --muted:#5b665f; --line:#d6ddd7;
+  --accent:#1f6b4a; --accent-soft:#e1efe7; --tag:#f2c230; --tag-ink:#2a2208; --danger:#b3261e;
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --body:"Figtree","Segoe UI",system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111613; --card:#1a211d; --ink:#e8eee9; --muted:#9aa69e; --line:#2b352f;
+  --accent:#5fc391; --accent-soft:#1f3229; --danger:#f2867e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111613; --card:#1a211d; --ink:#e8eee9; --muted:#9aa69e; --line:#2b352f;
+  --accent:#5fc391; --accent-soft:#1f3229; --danger:#f2867e; color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 var(--body);padding-inline:16px;padding-block:28px 64px}
+.wrap{max-width:1120px;margin:0 auto;display:grid;gap:22px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px}
+h1{font:800 clamp(2.1rem,6vw,3.4rem)/1 var(--display);letter-spacing:-.02em;margin:0;text-wrap:balance}
+h1 span{color:var(--accent)}
+.sub{margin:8px 0 0;color:var(--muted);max-width:62ch}
+.stats{display:flex;gap:22px;font-variant-numeric:tabular-nums}
+.stat b{display:block;font:800 1.5rem/1.1 var(--display)}
+.stat small{color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-size:.72rem;font-weight:600}
+
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.filters,.tools{display:flex;flex-wrap:wrap;gap:8px}
+button{font:600 .9rem var(--body);cursor:pointer}
+.chip{color:var(--ink);background:transparent;border:1.5px solid var(--line);border-radius:999px;padding:7px 14px}
+.chip:hover{border-color:var(--accent)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn{border:1.5px solid var(--accent);background:transparent;color:var(--accent);border-radius:8px;padding:7px 14px}
+.btn.solid{background:var(--accent);color:var(--bg)}
+.btn.ghost{border-color:var(--line);color:var(--ink)}
+.btn.warn{border-color:var(--danger);color:var(--danger)}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.editbanner{background:var(--accent-soft);border:1px solid var(--accent);border-radius:10px;padding:10px 14px;font-size:.92rem}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px}
+.card{position:relative;display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;transition:transform .15s ease,box-shadow .15s ease}
+.card:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgb(0 0 0 / .12)}
+.main{color:inherit;text-decoration:none;display:flex;flex-direction:column;flex:1}
+.pic{aspect-ratio:1/1;max-width:100%;background:#fff;display:grid;place-items:center;padding:18px}
+.pic img{width:100%;height:100%;object-fit:contain}
+.pic.cover{padding:0}.pic.cover img{object-fit:cover}
+.fallback{font:800 1.1rem var(--display);color:#5b665f;text-align:center;padding:12px}
+
+.tag{position:absolute;top:12px;right:-4px;background:var(--tag);color:var(--tag-ink);font:800 1.05rem/1 var(--display);padding:8px 14px 8px 22px;clip-path:polygon(12px 0,100% 0,100% 100%,12px 100%,0 50%);font-variant-numeric:tabular-nums}
+.tag::before{content:"";position:absolute;left:9px;top:50%;width:6px;height:6px;margin-top:-3px;border-radius:50%;background:var(--card)}
+.save{position:absolute;top:50px;right:8px;background:var(--accent);color:var(--bg);font-size:.72rem;font-weight:700;padding:3px 8px;border-radius:999px}
+
+.body{display:flex;flex-direction:column;gap:6px;padding:14px 16px 12px;flex:1;min-width:0}
+.store{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent)}
+.name{font:500 1.15rem/1.2 var(--display);margin:0}
+.detail{font-size:.88rem;color:var(--muted);margin:0}
+.note{font-size:.88rem}
+.offers{list-style:none;margin:0;padding:10px 16px 14px;border-top:1px dashed var(--line);display:grid;gap:4px;font-size:.86rem}
+.offers li{display:flex;justify-content:space-between;gap:10px}
+.offers a{color:var(--ink);text-decoration:none;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.offers a:hover{color:var(--accent);text-decoration:underline}
+.offers .p{font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
+.offers li.best .p{color:var(--accent)}
+.offers .sm{color:var(--muted);font-size:.78rem}
+.card.dream .name::after{content:" (stretch)";color:var(--muted);font-size:.8rem;font-family:var(--body)}
+.card.dream .pic{opacity:.85}
+
+.edit-row{display:none;gap:8px;padding:0 16px 14px}
+body.editing .edit-row{display:flex}
+.edit-row .btn{flex:1;padding:6px}
+.addcard{display:none;place-items:center;min-height:240px;border:2px dashed var(--accent);border-radius:14px;background:transparent;color:var(--accent);font:700 1.1rem var(--display)}
+body.editing .addcard{display:grid}
+
+dialog{border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);padding:0;width:min(560px,calc(100vw - 32px));max-height:calc(100dvh - 32px)}
+dialog::backdrop{background:rgb(0 0 0 / .45)}
+form{display:grid;gap:12px;padding:20px}
+form h2{font:800 1.4rem var(--display);margin:0}
+label{display:grid;gap:4px;font-size:.85rem;font-weight:600}
+label small{font-weight:400;color:var(--muted)}
+input,textarea{font:400 .95rem var(--body);color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
+textarea{min-height:56px;resize:vertical}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.offer-ed{display:grid;grid-template-columns:1fr 90px 32px;gap:6px;align-items:end}
+.offer-ed .url{grid-column:1 / -1}
+.offer-ed button{height:38px;border:1.5px solid var(--line);background:transparent;color:var(--danger);border-radius:8px}
+fieldset{border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:grid;gap:10px;margin:0}
+legend{font-weight:700;font-size:.85rem;padding:0 4px}
+.check{display:flex;gap:8px;align-items:center;font-weight:500}
+.check input{width:auto}
+.actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;display:flex;gap:14px;align-items:center;font-size:.92rem;box-shadow:0 8px 24px rgb(0 0 0 / .25);max-width:calc(100vw - 32px)}
+.toast button{background:transparent;border:0;color:var(--tag);text-decoration:underline}
+footer{color:var(--muted);font-size:.82rem;display:grid;gap:4px}
+@media (prefers-reduced-motion:reduce){.card{transition:none}.card:hover{transform:none}}
+@media (max-width:520px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.body{padding:10px 12px}.offers{padding:8px 12px 12px;font-size:.8rem}.name{font-size:1rem}.detail{display:none}.tag{font-size:.9rem;top:8px}.save{top:40px}.row2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Dave's <span>Wishlist</span> 2026</h1>
+      <p class="sub">Tap a picture to open the best price I found. Other stores are listed under each item. Prices were checked <span id="checked">October 13, 2026</span> and can change.</p>
+    </div>
+    <div class="stats">
+      <div class="stat"><b id="count">0</b><small>Items</small></div>
+      <div class="stat"><b id="low">$0</b><small>Starts at</small></div>
+    </div>
+  </header>
+
+  <div class="bar">
+    <nav class="filters" aria-label="Filter by price">
+      <button class="chip" id="f-all" data-f="all" aria-pressed="true">Everything</button>
+      <button class="chip" id="f-25" data-f="25" aria-pressed="false">Under $25</button>
+      <button class="chip" id="f-100" data-f="100" aria-pressed="false">$25 to $100</button>
+      <button class="chip" id="f-big" data-f="big" aria-pressed="false">$100 and up</button>
+    </nav>
+    <div class="tools">
+      <button class="btn ghost" id="toggleEdit">Edit list</button>
+    </div>
+  </div>
+
+  <div class="editbanner" id="editBanner" hidden>
+    <b>Editing.</b> Changes save in this browser automatically. To share the updated list, tap <b>Save shareable copy</b> and send that file.
+    <div class="tools" style="margin-top:8px">
+      <button class="btn solid" id="exportBtn">Save shareable copy</button>
+      <button class="btn ghost" id="doneBtn">Done editing</button>
+      <button class="btn warn" id="resetBtn">Reset to original</button>
+    </div>
+  </div>
+
+  <main class="grid" id="grid"></main>
+
+  <footer>
+    <span>Shoes are a men's 13. Shirts and jackets are XXXL. Anything marked "stretch" is a long shot, so no pressure.</span>
+    <span>"Best" is the lowest price I found for the right model and size. Prices on shoes can change by size and color.</span>
+  </footer>
+</div>
+
+<dialog id="dlg">
+  <form id="itemForm" method="dialog">
+    <h2 id="dlgTitle">Add item</h2>
+    <label>Item name <input id="fName" required placeholder="Crocs Baya Clog"></label>
+    <label>Picture link <small>Right-click the product photo, choose "Copy image address", paste it here.</small><input id="fImg" type="url" placeholder="https://..."></label>
+    <div class="row2">
+      <label>Short description <input id="fDetail" placeholder="Black, men's 13"></label>
+      <label>Note for people <input id="fNote" placeholder="Any color is fine"></label>
+    </div>
+    <fieldset>
+      <legend>Where to buy</legend>
+      <div id="offerList" style="display:grid;gap:12px"></div>
+      <button type="button" class="btn ghost" id="addOffer">+ Add another store</button>
+    </fieldset>
+    <label class="check"><input type="checkbox" id="fDream"> Mark as a stretch item</label>
+    <div class="actions">
+      <button type="button" class="btn ghost" id="cancelBtn">Cancel</button>
+      <button type="submit" class="btn solid" id="saveBtn">Save item</button>
+    </div>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" role="status" hidden><span id="toastMsg"></span><button id="undoBtn" type="button">Undo</button></div>
+
+<script id="seed" type="application/json">
+{"rev":2,"items":[
+{"id":"cfatee","name":"Chick-fil-A Cow Print Pocket Tee","detail":"Cow print pocket tee from the Chick-fil-A shop.","note":"Size XXXL (3XL).","img":"https://cdn.shopify.com/s/files/1/0590/0638/6221/files/1-CFA_MerchSOC_2B_PocketTee_Shot01_0899_x3_1a0f80e8-1be8-47d8-9e90-a2a1e501ed7c.jpg?v=1684788059&width=600",
+ "offers":[{"store":"Chick-fil-A Shop","price":18.00,"url":"https://shop.chick-fil-a.com/collections/apparel/products/cow-print-pocket-tee?variant=41634105688109","sm":"3XL, only sold here"}]},
+{"id":"jacket","name":"X RAY Men's Denim Jacket","detail":"Jet Black denim trucker jacket.","note":"Size XXXL (3XL). Going to add Clippers patches to it.","img":"https://target.scene7.com/is/image/Target/GUEST_34a0a236-bbd9-404a-9279-2b1c2203fe00?wid=600&hei=600",
+ "offers":[{"store":"Target","price":35.00,"url":"https://www.target.com/p/x-ray-men-s-denim-jacket-in-jet-black-size-2x-large/-/A-89952148?preselect=89952149","sm":"3XL"},
+           {"store":"Macy's","price":35.20,"url":"https://www.macys.com/shop/featured/x-ray-mens-denim-jacket"}]},
+{"id":"peak","name":"Puffco Peak","detail":"Smart electric rig, Onyx Black.","note":"The original Peak in Onyx.","img":"https://www.puffco.com/cdn/shop/files/onyx_0003_Peak-Onyx-3Quarters-Left.png?v=1765323176&width=600",
+ "offers":[{"store":"Puffco","price":250.00,"url":"https://www.puffco.com/products/the-peak","sm":"only sold direct"}]},
+{"id":"tape","name":"Hyper Tough 25 ft Tape Measure","detail":"Self-locking steel blade with fraction markings.","note":"The cheapest 25 ft one is perfect.","img":"https://i5.walmartimages.com/seo/Hyper-Tough-25ft-Self-Lock-Steel-Tape-Measure_e9fc059a-6606-45aa-bb5d-5e27c1a30e07.a39eac3f454fee363087b6abfd7d0143.jpeg?odnHeight=480&odnWidth=480&odnBg=FFFFFF",
+ "offers":[{"store":"Walmart","price":7.97,"url":"https://www.walmart.com/ip/659687882","sm":"Walmart brand"}]},
+{"id":"ratchet","name":"Hyper Tough 40 Piece Ratchet Kit","detail":"Ratchet, sockets and bits in a click-fit case.","note":"Small toolbox to keep in the car.","img":"https://i5.walmartimages.com/seo/HT-40-P-RATCHET-SD_65ff4b78-93de-4fae-8833-50dfaf6a19a2.4ef9ecbe6a963dbb05fc11fd547dde44.jpeg?odnHeight=480&odnWidth=480&odnBg=FFFFFF",
+ "offers":[{"store":"Walmart","price":9.88,"url":"https://www.walmart.com/ip/16705455247","sm":"Walmart brand"}]},
+{"id":"crocs","name":"Crocs Baya Clog","detail":"Classic Baya clog.","note":"Black, men's 13.","img":"https://i5.walmartimages.com/seo/Crocs-Unisex-Baya-Clog_8788df11-5bdd-4393-a5c5-5f4f2c821f29.02e6b029654273eacc8649c9c256f2d7.jpeg?odnHeight=480&odnWidth=480&odnBg=FFFFFF",
+ "offers":[{"store":"Crocs.com","price":29.99,"url":"https://www.crocs.com/p/baya-clog/10126.html?cid=001"},
+           {"store":"Walmart","price":34.99,"url":"https://www.walmart.com/ip/Crocs-Unisex-Baya-Clog-Sandals/128879772?selectedSellerId=103136029"},
+           {"store":"Target","price":34.99,"url":"https://www.target.com/s?searchTerm=crocs+baya+clog+black"}]},
+{"id":"heydude","name":"HEYDUDE Wally Stretch Sox","detail":"Men's slip-on, memory foam insole.","note":"Size 13. Black or khaki, either one works.","img":"https://i5.walmartimages.com/seo/Heydude-Wally-Stretch-Sox-Wide-Width-Casual-Shoe-42660-066-Black_a2a8a795-a67f-476c-b092-0b6ef6753bcc.1b2c763911bd592710ddea50db860546.jpeg?odnHeight=480&odnWidth=480&odnBg=FFFFFF",
+ "offers":[{"store":"DICK'S Sporting Goods","price":39.97,"url":"https://www.dickssportinggoods.com/p/hey-dude-wally-stretch-sox-shoes-25awpmwllystrtchsfot/25awpmwllystrtchs","sm":"sale"},
+           {"store":"ShoeMall","price":45.49,"url":"https://www.shoemall.com/product/hey-dude-wally-stretch-sox-men-s-/1380915-6"},
+           {"store":"Walmart","price":48.74,"url":"https://www.walmart.com/ip/HEYDUDE-Wally-Stretch-Sox-Granite-Grey-Black-13/20869469789","sm":"grey"},
+           {"store":"Amazon","price":61.90,"url":"https://www.amazon.com/dp/B0CS2T54J5?th=1&psc=1","sm":"black, 13"}]},
+{"id":"onn","name":"onn. 4K Pro Streaming Device (2026)","detail":"Google TV with Gemini, 32GB storage, 3GB RAM.","note":"Make sure it's the 2026 version.","img":"https://i5.walmartimages.com/seo/4K-PRO-STREAMING_38d24374-0d07-4393-868a-36fb47ad408e.229daefb3c8f41105c623f8d26541c55.png?odnHeight=480&odnWidth=480&odnBg=FFFFFF",
+ "offers":[{"store":"Walmart","price":59.98,"url":"https://www.walmart.com/ip/18382213962","sm":"Walmart only"}]},
+{"id":"gow","name":"God of War Laufey (PS5)","detail":"Digital PS5 game.","note":"Digital, not disc. A PlayStation gift card works too.","cover":true,"img":"https://image.api.playstation.com/vulcan/ap/rnd/202609/1800/f670b0e7fd6a1032b593598939a6d65de877d51b8bee5d41.jpg?w=720",
+ "offers":[{"store":"PlayStation Store","price":69.99,"url":"https://store.playstation.com/en-us/product/UP9000-PPSA19249_00-LAUFEY0000000000","sm":"same price everywhere"}]},
+{"id":"tractive","name":"Tractive Cat GPS Tracker","detail":"Real-time location and wellness tracking for cats.","note":"For the cat.","img":"https://m.media-amazon.com/images/I/71hH19zntmL._AC_SL500_.jpg",
+ "offers":[{"store":"Amazon","price":90.43,"url":"https://www.amazon.com/dp/B0FN6VND6J?th=1","sm":"includes 6 months of service"},
+           {"store":"Tractive.com","price":49.00,"url":"https://tractive.com/en/pd/gps-tracker-cat","sm":"plus required plan, about $8.50+/mo","nobest":true}]},
+{"id":"ottocast","name":"OTTOCAST P3 Pro AI Box","detail":"Wireless CarPlay and Android Auto, Android 13, 8GB RAM, 128GB storage.","note":"Android AI box for the car.","img":"https://m.media-amazon.com/images/I/71E-XfG9HWL._AC_SL500_.jpg",
+ "offers":[{"store":"Ottocast.com","price":197.10,"url":"https://www.ottocast.com/products/ottoaibox-p3-pro-carplay-ai-box"},
+           {"store":"Amazon","price":219.00,"url":"https://www.amazon.com/dp/B0G49C768G"},
+           {"store":"Walmart","price":219.00,"url":"https://www.walmart.com/search?q=ottocast+p3+pro"}]},
+{"id":"watch","name":"Samsung Galaxy Watch Ultra 47mm LTE","detail":"Titanium, cellular. The 2024 and 2025 versions are nearly identical.","note":"Probably too much. Don't even consider it, honestly lol.","dream":true,"img":"https://i5.walmartimages.com/asr/c7bc1f63-0077-44ce-8b28-ee60c2ef48a3.aba07576de0429b135bbb0ae0a4876dc.jpeg?odnHeight=480&odnWidth=480&odnBg=FFFFFF",
+ "offers":[{"store":"Walmart","price":269.99,"url":"https://www.walmart.com/ip/6186958120","sm":"new, Titanium White"},
+           {"store":"Walmart","price":249.99,"url":"https://www.walmart.com/ip/20785610067","sm":"restored","nobest":true},
+           {"store":"Walmart","price":329.99,"url":"https://www.walmart.com/ip/18810701034?conditionGroupCode=3","sm":"open box, 2025 Titanium Blue"},
+           {"store":"Best Buy","price":454.99,"url":"https://www.bestbuy.com/site/searchpage.jsp?st=galaxy+watch+ultra+47mm+lte","sm":"new"}]}
+]}
+</script>
+
+<script>
+(() => {
+const KEY = "daves-wishlist-2026";
+const seed = JSON.parse(document.getElementById("seed").textContent);
+let items = load();
+let filter = "all";
+let editingId = null;
+let lastRemoved = null;
+
+function load(){
+  try{
+    const s = JSON.parse(localStorage.getItem(KEY) || "null");
+    if (s && s.rev >= seed.rev && Array.isArray(s.items)) return s.items;
+  }catch(e){}
+  return structuredClone(seed.items);
+}
+function persist(){
+  try{ localStorage.setItem(KEY, JSON.stringify({rev: seed.rev, items})); }catch(e){}
+}
+
+const money = n => "$" + Number(n).toFixed(2);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const host = u => { try{ return new URL(u).hostname.replace(/^www\./,""); }catch(e){ return ""; } };
+const storeFromUrl = u => {
+  const h = host(u); if(!h) return "";
+  const known = {"amazon.com":"Amazon","walmart.com":"Walmart","target.com":"Target","bestbuy.com":"Best Buy","ebay.com":"eBay","store.playstation.com":"PlayStation Store","dickssportinggoods.com":"DICK'S Sporting Goods","costco.com":"Costco","kohls.com":"Kohl's","chewy.com":"Chewy"};
+  if (known[h]) return known[h];
+  const base = h.split(".").slice(-2,-1)[0] || h;
+  return base.charAt(0).toUpperCase() + base.slice(1);
+};
+function best(it){
+  const ok = it.offers.filter(o => o.url && !o.nobest);
+  const pool = ok.length ? ok : it.offers;
+  return pool.reduce((a,b) => (+b.price < +a.price ? b : a), pool[0]);
+}
+
+const grid = document.getElementById("grid");
+const tests = {all:()=>true, "25":p=>p<25, "100":p=>p>=25&&p<100, big:p=>p>=100};
+
+function render(){
+  grid.innerHTML = "";
+  const sorted = [...items].sort((a,b) => +best(a).price - +best(b).price);
+  let shown = 0, low = Infinity;
+  sorted.forEach(it => {
+    if (!it.offers || !it.offers.length) return;
+    const b = best(it);
+    const p = +b.price;
+    if (!tests[filter](p)) return;
+    shown++; low = Math.min(low, p);
+    const others = it.offers.filter(o => o !== b);
+    const nextUp = others.filter(o=>!o.nobest).map(o=>+o.price).filter(x=>x>p).sort((x,y)=>x-y)[0];
+    const el = document.createElement("article");
+    el.className = "card" + (it.dream ? " dream" : "");
+    el.innerHTML = `
+      <a class="main" href="${esc(b.url)}" target="_blank" rel="noopener">
+        <div class="pic${it.cover ? " cover" : ""}"><img loading="lazy" referrerpolicy="no-referrer" alt=""></div>
+        <div class="tag">${money(p)}</div>
+        ${nextUp ? `<div class="save">Save ${money(nextUp - p)}</div>` : ""}
+        <div class="body">
+          <span class="store">Best: ${esc(b.store)}</span>
+          <h2 class="name">${esc(it.name)}</h2>
+          ${it.detail ? `<p class="detail">${esc(it.detail)}</p>` : ""}
+          ${it.note ? `<div class="note"><b>${esc(it.note)}</b></div>` : ""}
+        </div>
+      </a>
+      <ul class="offers">
+        ${[b, ...others.sort((x,y)=>x.price-y.price)].map(o => `
+          <li class="${o===b ? "best" : ""}">
+            <a href="${esc(o.url)}" target="_blank" rel="noopener">${esc(o.store)}${o.sm ? ` <span class="sm">${esc(o.sm)}</span>` : ""}</a>
+            <span class="p">${money(o.price)}</span>
+          </li>`).join("")}
+      </ul>
+      <div class="edit-row">
+        <button class="btn ghost" data-act="edit" data-id="${esc(it.id)}">Edit</button>
+        <button class="btn warn" data-act="remove" data-id="${esc(it.id)}">Remove</button>
+      </div>`;
+    const img = el.querySelector("img");
+    img.alt = it.name;
+    img.onerror = () => { img.parentElement.innerHTML = `<div class="fallback">${esc(it.name)}</div>`; };
+    if (it.img) img.src = it.img; else img.onerror();
+    grid.appendChild(el);
+  });
+  const add = document.createElement("button");
+  add.className = "addcard"; add.id = "addCard"; add.textContent = "+ Add an item";
+  add.onclick = () => openForm(null);
+  grid.appendChild(add);
+  document.getElementById("count").textContent = shown;
+  document.getElementById("low").textContent = isFinite(low) ? money(low) : "$0";
+}
+
+grid.addEventListener("click", e => {
+  const btn = e.target.closest("button[data-act]"); if (!btn) return;
+  const id = btn.dataset.id;
+  if (btn.dataset.act === "edit") openForm(id);
+  if (btn.dataset.act === "remove") {
+    const idx = items.findIndex(i => i.id === id);
+    lastRemoved = {item: items[idx], idx};
+    items.splice(idx, 1); persist(); render();
+    toast(`Removed ${lastRemoved.item.name}.`, true);
+  }
+});
+
+let toastTimer;
+function toast(msg, undo){
+  const t = document.getElementById("toast");
+  document.getElementById("toastMsg").textContent = msg;
+  document.getElementById("undoBtn").hidden = !undo;
+  t.hidden = false; clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.hidden = true, 6000);
+}
+document.getElementById("undoBtn").onclick = () => {
+  if (!lastRemoved) return;
+  items.splice(lastRemoved.idx, 0, lastRemoved.item); lastRemoved = null;
+  persist(); render(); toast("Item restored.", false);
+};
+
+document.querySelectorAll(".chip").forEach(btn => btn.addEventListener("click", () => {
+  document.querySelectorAll(".chip").forEach(b => b.setAttribute("aria-pressed", b === btn));
+  filter = btn.dataset.f; render();
+}));
+
+/* Edit mode */
+const setEditing = on => {
+  document.body.classList.toggle("editing", on);
+  document.getElementById("editBanner").hidden = !on;
+  document.getElementById("toggleEdit").hidden = on;
+};
+document.getElementById("toggleEdit").onclick = () => setEditing(true);
+document.getElementById("doneBtn").onclick = () => setEditing(false);
+
+let resetArmed = false;
+document.getElementById("resetBtn").onclick = e => {
+  if (!resetArmed){ resetArmed = true; e.target.textContent = "Tap again to reset"; setTimeout(()=>{resetArmed=false; e.target.textContent="Reset to original";}, 4000); return; }
+  items = structuredClone(seed.items); persist(); render(); resetArmed = false;
+  e.target.textContent = "Reset to original"; toast("List reset to the original version.", false);
+};
+
+/* Form */
+const dlg = document.getElementById("dlg");
+const offerList = document.getElementById("offerList");
+let offerSeq = 0;
+function offerRow(o = {}){
+  const n = ++offerSeq;
+  const d = document.createElement("div");
+  d.className = "offer-ed";
+  d.innerHTML = `
+    <label class="url">Product link <input type="url" id="oUrl${n}" class="oUrl" required placeholder="https://www.amazon.com/..." value="${esc(o.url)}"></label>
+    <label>Store <input id="oStore${n}" class="oStore" placeholder="Fills in from link" value="${esc(o.store)}"></label>
+    <label>Price <input id="oPrice${n}" class="oPrice" type="number" step="0.01" min="0" required placeholder="0.00" value="${o.price ?? ""}"></label>
+    <button type="button" aria-label="Remove this store" title="Remove this store">&times;</button>
+    <label class="url">Small note <small>(optional, e.g. "open box" or "plan required")</small><input id="oSm${n}" class="oSm" value="${esc(o.sm)}"></label>`;
+  const url = d.querySelector(".oUrl"), store = d.querySelector(".oStore");
+  url.addEventListener("change", () => { if (!store.value) store.value = storeFromUrl(url.value); });
+  d.querySelector("button").onclick = () => { if (offerList.children.length > 1) d.remove(); };
+  d.dataset.nobest = o.nobest ? "1" : "";
+  offerList.appendChild(d);
+}
+document.getElementById("addOffer").onclick = () => offerRow();
+function openForm(id){
+  editingId = id;
+  const it = id ? items.find(i => i.id === id) : {offers:[{}]};
+  document.getElementById("dlgTitle").textContent = id ? "Edit item" : "Add item";
+  document.getElementById("fName").value = it.name || "";
+  document.getElementById("fImg").value = it.img || "";
+  document.getElementById("fDetail").value = it.detail || "";
+  document.getElementById("fNote").value = it.note || "";
+  document.getElementById("fDream").checked = !!it.dream;
+  offerList.innerHTML = "";
+  (it.offers.length ? it.offers : [{}]).forEach(offerRow);
+  dlg.showModal();
+}
+document.getElementById("cancelBtn").onclick = () => dlg.close();
+document.getElementById("itemForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const offers = [...offerList.querySelectorAll(".offer-ed")].map(r => {
+    const url = r.querySelector(".oUrl").value.trim();
+    const o = {store: r.querySelector(".oStore").value.trim() || storeFromUrl(url) || "Store", price: parseFloat(r.querySelector(".oPrice").value) || 0, url};
+    const sm = r.querySelector(".oSm").value.trim(); if (sm) o.sm = sm;
+    if (r.dataset.nobest) o.nobest = true;
+    return o;
+  }).filter(o => o.url);
+  const prev = editingId ? items.find(i => i.id === editingId) : {};
+  const it = {...prev,
+    id: editingId || ("i" + Date.now().toString(36)),
+    name: document.getElementById("fName").value.trim(),
+    img: document.getElementById("fImg").value.trim(),
+    detail: document.getElementById("fDetail").value.trim(),
+    note: document.getElementById("fNote").value.trim(),
+    dream: document.getElementById("fDream").checked,
+    offers};
+  if (editingId) items[items.findIndex(i => i.id === editingId)] = it; else items.push(it);
+  persist(); render(); dlg.close();
+  toast(editingId ? "Item updated." : `Added ${it.name}.`, false);
+});
+
+/* Export a standalone copy with the current list baked in */
+document.getElementById("exportBtn").onclick = () => {
+  const doc = document.documentElement.cloneNode(true);
+  const rev = Date.now();
+  doc.querySelector("#seed").textContent = JSON.stringify({rev, items}, null, 1);
+  doc.querySelector("#grid").innerHTML = "";
+  doc.querySelector("body").classList.remove("editing");
+  doc.querySelector("#editBanner").setAttribute("hidden", "");
+  doc.querySelector("#toggleEdit").removeAttribute("hidden");
+  doc.querySelector("#toast").setAttribute("hidden", "");
+  const today = new Date().toLocaleDateString("en-US", {month:"long", day:"numeric", year:"numeric"});
+  doc.querySelector("#checked").textContent = today;
+  const html = "<!doctype html>\n" + doc.outerHTML;
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([html], {type:"text/html"}));
+  a.download = "daves-wishlist-2026.html";
+  document.body.appendChild(a); a.click(); a.remove();
+  try{ localStorage.setItem(KEY, JSON.stringify({rev, items})); }catch(e){}
+  toast("Saved. Send that file to anyone.", false);
+};
+
+render();
+})();
+</script>
+</body>
+</html>
